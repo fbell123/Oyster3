@@ -18,8 +18,9 @@ describe Oystercard do
   end
 
   it 'has a balance that can be reduced' do
-    subject.top_up(40)
-    expect(subject.touch_out(:station)).to eq subject.balance
+    subject.touch_in(:station)
+    subject.touch_out(:station)
+    expect(subject.balance).to eq 47
   end
 
   context 'with balance' do
@@ -36,11 +37,11 @@ describe Oystercard do
 
     it 'records the entry station' do
       subject.touch_in(:station)
-      expect(subject.entry_station).to eq :station
+      expect(subject.entry_station).to eq [:station]
     end
 
     it 'decreases balance by the minimum fare on touching out' do
-    expect {subject.touch_out(:station)}.to change{subject.balance}.by(-Oystercard::MINIMUM_FARE)
+    expect {subject.touch_out(:station)}.to change{subject.balance}.by(-Journey::MINIMUM_FARE)
     end
 
     it 'checks the default journey history' do

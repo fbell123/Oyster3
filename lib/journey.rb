@@ -4,31 +4,20 @@ class Journey
 
   DEFAULT_PENALTY = 6
   MINIMUM_FARE = 3
-
-  def initialize
-    @journey_history = []
-    @recent_journey = {}
+  def initialize(oyster)
+    @oystercard = oyster
   end
 
   def start(oystercard)
-    oystercard.touch_in ? true :false
+    oystercard.entry_station ? true : false
   end
 
   def finish(oystercard)
-    oystercard.touch_out ? true : false
+    oystercard.exit_station ? true : false
   end
 
   def fare
-    start && finish ? MINIMUM_FARE : DEFAULT_PENALTY
+    start(@oystercard) && finish(@oystercard) ? MINIMUM_FARE : DEFAULT_PENALTY
   end
-
-  def recent_journey(oystercard)
-    @recent_journey = oystercard.last_journey
-  end
-
-  def journey_history
-    @journey_history << @recent_journey
-  end
-
 
 end
