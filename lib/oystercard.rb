@@ -7,8 +7,8 @@ class Oystercard
 
   def initialize
     @balance = 0
+    @journey = {}
     @entry_station = []
-    @journey = []
   end
 
   def top_up(value)
@@ -17,16 +17,20 @@ class Oystercard
     @balance += value
   end
 
-  def touch_in(station)
+  def touch_in(entry_station)
     raise 'Balance is too low' if @balance < MINIMUM_BALANCE
-    @entry_station << station
-    @journey << station
+    @entry_station << entry_station
   end
 
-  def touch_out(station)
-    @journey << station
-    @entry_station = nil
+  def touch_out(exit_station)
+    @exit_station = exit_station
+    one_journey
     deduct(MINIMUM_FARE)
+  end
+
+  def one_journey
+    @journey = {entry_station: @entry_station, exit_station: @exit_station}
+    @entry_station = nil
   end
 
   def in_journey?

@@ -43,13 +43,13 @@ describe Oystercard do
     end
 
     it 'checks the default journey history' do
-      expect(subject.journey).to eq []
+      expect(subject.journey).to be {}
     end
 
-    it 'checks journey is created on touch out' do
+    it 'checks if one journey is created on touch out' do
       subject.touch_in(:station)
       subject.touch_out(:station)
-      expect(subject.journey).to eq [:station, :station]
+      expect(subject.journey).to include(:entry_station, :exit_station)
     end
   end
 
