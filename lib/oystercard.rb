@@ -3,7 +3,7 @@ require_relative 'journey'
 
 class Oystercard
 
-  attr_reader :entry_station, :last_journey, :journey_history
+  attr_reader :entry_station, :last_journey
   attr_accessor :balance
 
   MAXIMUM_BALANCE = 90
@@ -14,7 +14,6 @@ class Oystercard
     @balance = 50
     @last_journey = {}
     @entry_station = []
-    @journey_history = []
   end
 
   def top_up(value)

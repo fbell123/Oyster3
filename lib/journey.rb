@@ -5,6 +5,10 @@ class Journey
   DEFAULT_PENALTY = 6
   MINIMUM_FARE = 3
 
+  def initialize
+    @journey_history = []
+    @recent_journey = {}
+  end
 
   def start(oystercard)
     oystercard.touch_in ? true :false
