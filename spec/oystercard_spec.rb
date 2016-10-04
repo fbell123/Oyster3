@@ -2,8 +2,8 @@ require 'oystercard'
 
 describe Oystercard do
 
-  it 'has a balance of 0 by default' do
-  expect(subject.balance).to eq 0
+  it 'has a balance of 50 by default' do
+  expect(subject.balance).to eq 50
   end
 
   it 'has a balance that can be topped up' do
@@ -35,7 +35,7 @@ describe Oystercard do
 
     it 'records the entry station' do
       subject.touch_in(:station)
-      expect(subject.entry_station).to eq [:station]
+      expect(subject.entry_station).to eq :station
     end
 
     it 'decreases balance by the minimum fare on touching out' do
@@ -43,13 +43,13 @@ describe Oystercard do
     end
 
     it 'checks the default journey history' do
-      expect(subject.journey).to be {}
+      expect(subject.last_journey).to be_empty
     end
 
     it 'checks if one journey is created on touch out' do
       subject.touch_in(:station)
       subject.touch_out(:station)
-      expect(subject.journey).to include(:entry_station, :exit_station)
+      expect(subject.last_journey).to include(:entry_station, :exit_station)
     end
   end
 
@@ -59,6 +59,7 @@ describe Oystercard do
   end
 
   it 'raises an error if the balance is too low' do
+    subject.balance = 0
     expect { subject.touch_in(:station) }.to raise_error 'Balance is too low'
   end
 
