@@ -22,14 +22,20 @@ describe Oystercard do
   end
 
   context 'with balance' do
+    let (:station) {double :station}
+
     before :example do
       subject.top_up(20)
+
     end
-    it 'records the start of a journey' do
-      expect(subject.touch_in).to be true
+    it 'touched in at the start of a journey' do
+      subject.touch_in(:station)
+      expect(subject.in_journey?).to be true
     end
-    it 'records that the card is within a journey after touching in, before touching out' do
-      expect(subject.touch_in).to eq subject.in_journey?
+
+    it 'records the entry station' do
+      subject.touch_in(:station)
+      expect(subject.entry_station).to eq [:station]
     end
 
     it 'decreases balance by the minimum fare on touching out' do
@@ -43,7 +49,7 @@ describe Oystercard do
   end
 
   it 'raises an error if the balance is too low' do
-    expect { subject.touch_in }.to raise_error 'Balance is too low'
+    expect { subject.touch_in(:station) }.to raise_error 'Balance is too low'
   end
 
 end
