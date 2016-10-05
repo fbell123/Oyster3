@@ -20,11 +20,6 @@ describe Oystercard do
     expect(oystercard.balance).to eq 50
     end
 
-    it 'checks the default journey history' do
-      expect(oystercard.journey_history).to eq([{entry_station: nil, entry_zone: nil,
-                                            exit_station: nil, exit_zone: nil}])
-    end
-
   end
 
   describe "#top_up" do
@@ -43,31 +38,12 @@ describe Oystercard do
 
   describe "#touch_in" do
 
-    it 'records entry station name and zone' do
-      oystercard.touch_in(@station1)
-      expect(oystercard.last_journey).to eq({entry_station: "Paddington", entry_zone: 1, exit_station: nil, exit_zone: nil})
-    end
-
     it 'raises an error if the balance is too low' do
       oystercard.balance = 0
       expect { oystercard.touch_in(:station) }.to raise_error 'Balance is too low'
     end
 
   end
-
-
-  it "last journey hash has the appropriate key symbols" do
-    expect(oystercard.last_journey).to include(:entry_station, :entry_zone,
-                                              :exit_station, :exit_zone)
-  end
-
-
-
-    it 'checks if one journey is created on touch out' do
-      oystercard.touch_in(@station1)
-      oystercard.touch_out(@station2)
-      expect(oystercard.last_journey).not_to be_empty
-    end
 
 
 end

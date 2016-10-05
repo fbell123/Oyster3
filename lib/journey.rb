@@ -5,7 +5,10 @@ class Journey
   DEFAULT_PENALTY = 6
   MINIMUM_FARE = 1
 
+  attr_reader :history_journey, :clear_current_journey, :current_journey
+
   def initialize
+    @journey_history = []
   end
 
   def clear_current_journey
@@ -22,6 +25,11 @@ class Journey
   def end_journey(exit_station)
     @current_journey[:exit_station] = exit_station.name
     @current_journey[:exit_zone] = exit_station.zone
+    history_journey
+  end
+
+  def history_journey
+    @journey_history << @current_journey
   end
 
   def fare
