@@ -13,7 +13,8 @@ class Oystercard
   def initialize
     @balance = 50
     clear_last_journey
-    @journey_history = []
+    @journey_history =  []
+    @journey = Journey.new
   end
 
   def clear_last_journey
@@ -58,12 +59,3 @@ class Oystercard
   end
 
 end
-
-card = Oystercard.new
-station1 = Station.new("a",1)
-station2 = Station.new("b",2)
-
-puts card.touch_in(station1).inspect
-puts card.touch_out(station2).inspect
-puts card.touch_in(station2).inspect
-puts card.touch_out(station1).inspect
