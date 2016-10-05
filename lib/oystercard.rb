@@ -28,23 +28,18 @@ class Oystercard
   end
 
   def touch_in(entry_station)
+    clear_last_journey
     raise 'Balance is too low' if @balance < MINIMUM_BALANCE
     @last_journey[:entry_station] = entry_station.name
     @last_journey[:entry_zone] = entry_station.zone
-    return [entry_station.name, entry_station.zone]
+    [entry_station.name, entry_station.zone]
   end
 
   def touch_out(exit_station)
     @last_journey[:exit_station] = exit_station.name
     @last_journey[:exit_zone] = exit_station.zone
-    return [exit_station.name, exit_station.zone]
-  end
-
-  def one_journey
-    @last_journey = {entry_station: @entry_station, exit_station: @exit_station}
     journey_history
-    @entry_station = nil
-    @exit_station = nil
+    self
   end
 
   def journey_history
@@ -52,9 +47,9 @@ class Oystercard
   end
 
 
-  def in_journey?
-    @entry_station ? true : false
-  end
+  # def in_journey?
+  #   @entry_station ? true : false
+  # end
 
   private
 
@@ -63,3 +58,12 @@ class Oystercard
   end
 
 end
+
+card = Oystercard.new
+station1 = Station.new("a",1)
+station2 = Station.new("b",2)
+
+puts card.touch_in(station1).inspect
+puts card.touch_out(station2).inspect
+puts card.touch_in(station2).inspect
+puts card.touch_out(station1).inspect
