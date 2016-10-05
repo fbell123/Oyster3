@@ -4,6 +4,7 @@ class Journey
 
   DEFAULT_PENALTY = 6
   MINIMUM_FARE = 3
+
   def initialize(oyster)
     @oystercard = oyster
   end
