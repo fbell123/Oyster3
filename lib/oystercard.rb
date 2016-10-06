@@ -31,8 +31,8 @@ class Oystercard
   end
 
   def touch_out(exit_station)
-    #If this is the first ever touch OR user forgot to touch in
-    create_journey(nil) if @journey.nil? || !@journey.complete?
+    #If this is the first ever touch
+    create_journey(nil) if @journey.nil?
     deduct(@journey.end_journey(exit_station))
     exit_message
   end
@@ -50,12 +50,11 @@ class Oystercard
   end
 
   def entry_message
-    puts "Station: #{@journey.entry_station}"
-    penalty_message
+    puts "Station: #{@journey.entry_station.name}"
   end
 
   def exit_message
-    puts "Station: #{@journey.exit_station}. Charge: #{@journey.fare}"
+    puts "Station: #{@journey.exit_station.name}. Charge: #{@journey.fare}" unless @journey.exit_station.nil?
     penalty_message
   end
 

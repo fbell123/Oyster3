@@ -4,6 +4,8 @@ class Journey
 
   DEFAULT_PENALTY = 6
   MINIMUM_FARE = 1
+  BOUNDARY_FARE = 1
+
 
   attr_reader :entry_station, :exit_station, :journey_log
 
@@ -23,9 +25,12 @@ class Journey
 
   def end_journey(exit_station)
     @exit_station = exit_station
+    @entry_station = nil unless complete?
     add_to_history
     fare
   end
+
+
 
   def add_to_history
     @journey_log.save_journey(self)
@@ -36,7 +41,11 @@ class Journey
   end
 
   def fare
-    complete? ? MINIMUM_FARE : DEFAULT_PENALTY
+    complete? ? boundary_fare : DEFAULT_PENALTY
+  end
+
+  def boundary_fare
+    ((entry_station.zone - exit_station.zone).abs * BOUNDARY_FARE) + MINIMUM_FARE
   end
 
 end
