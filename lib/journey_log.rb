@@ -3,9 +3,14 @@ require_relative 'journey'
 
 class JourneyLog
 
-  def initialize(journey)
-    @journey_log = Array.new
-    @journey_log << journey
+  attr_reader :history
+
+  def initialize
+    @history = Array.new
+  end
+
+  def save_journey(journey)
+    @history << journey
   end
 
 end

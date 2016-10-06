@@ -4,7 +4,8 @@ require 'station'
 
 describe Journey do
 
-  subject(:journey) {described_class.new}
+  let(:journey_log) {double("journey log", save_journey: true)}
+  subject(:journey) {described_class.new(journey_log)}
   let(:station1){double("station", name: "Paddington", zone: 1)}
   let(:station2){double("station", name: "Waterloo", zone: 2)}
 
@@ -37,16 +38,13 @@ describe Journey do
     expect(journey.exit_station).to be station2
   end
 
-  it 'checks a journey is saved' do
-    journey.start_journey(station1)
+  it 'knows which journey log to log to' do
+    expect(journey).to respond_to(:journey_log)
+  end
+
+  it 'saves journey to journey log' do
+    expect(journey_log).to receive(:save_journey)
     journey.end_journey(station2)
-    expect(journey.history.last).not_to be_nil
   end
-
-  it 'checks journey history is empty when Oyster is created' do
-    expect(journey.history).to eq []
-  end
-
-
 
 end

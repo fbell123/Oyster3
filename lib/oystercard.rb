@@ -1,9 +1,10 @@
 require_relative 'station'
 require_relative 'journey'
+require_relative 'journey_log'
 
 class Oystercard
 
-  attr_reader :journey
+  attr_reader :journey, :journey_log
   attr_accessor :balance
 
   MAXIMUM_BALANCE = 90
@@ -12,6 +13,7 @@ class Oystercard
 
   def initialize
     @balance = 50
+    @journey_log = JourneyLog.new
   end
 
   def top_up(value)
@@ -21,15 +23,18 @@ class Oystercard
 
   def touch_in(entry_station)
     raise 'Balance is too low' if @balance < MINIMUM_BALANCE
+    #If the user forgot to touch out, touch out with a station of nil
+    #aka you have a journey and an exit station but no entry station
     touch_out(nil) if !@journey.nil? && @journey.exit_station.nil?
     create_journey(entry_station)
-    [@journey.entry_station]
+    entry_message
   end
 
   def touch_out(exit_station)
-    create_journey(nil) if @journey.nil?
+    #If this is the first ever touch OR user forgot to touch in
+    create_journey(nil) if @journey.nil? || !@journey.complete?
     deduct(@journey.end_journey(exit_station))
-    [@journey.exit_station, @journey.fare]
+    exit_message
   end
 
 
@@ -40,8 +45,22 @@ class Oystercard
   end
 
   def create_journey(entry_station)
-    @journey = Journey.new
+    @journey = Journey.new(@journey_log)
     @journey.start_journey(entry_station)
+  end
+
+  def entry_message
+    puts "Station: #{@journey.entry_station}"
+    penalty_message
+  end
+
+  def exit_message
+    puts "Station: #{@journey.exit_station}. Charge: #{@journey.fare}"
+    penalty_message
+  end
+
+  def penalty_message
+    puts "Charged penalty fare #{Journey::DEFAULT_PENALTY}" unless @journey.complete?
   end
 
 end

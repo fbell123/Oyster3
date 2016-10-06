@@ -13,6 +13,10 @@ describe Oystercard do
     expect(oystercard.balance).to eq 50
     end
 
+    it "creates a journey log" do
+      expect(oystercard.journey_log).not_to be nil
+    end
+
   end
 
   describe "#top_up" do

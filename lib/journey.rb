@@ -5,10 +5,10 @@ class Journey
   DEFAULT_PENALTY = 6
   MINIMUM_FARE = 1
 
-  attr_reader :history, :clear_current_journey, :entry_station, :exit_station
+  attr_reader :entry_station, :exit_station, :journey_log
 
-  def initialize
-    @history = []
+  def initialize(journey_log)
+    @journey_log = journey_log
   end
 
   def clear_current_journey
@@ -28,7 +28,7 @@ class Journey
   end
 
   def add_to_history
-    @history << self
+    @journey_log.save_journey(self)
   end
 
   def complete?
