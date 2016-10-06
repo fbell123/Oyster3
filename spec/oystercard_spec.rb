@@ -5,15 +5,8 @@ require 'station'
 describe Oystercard do
 
   subject(:oystercard) {described_class.new}
-
-  before(:each) do
-    @station1 = double(:station)
-    @station2 = double(:station)
-    allow(@station1).to receive(:name).and_return('Paddington')
-    allow(@station1).to receive(:zone).and_return(1)
-    allow(@station2).to receive(:name).and_return('Euston Square')
-    allow(@station2).to receive(:zone).and_return(2)
-  end
+  let(:station1){double("station", name: "Paddington", zone: 1)}
+  let(:station2){double("station", name: "Waterloo", zone: 2)}
 
   describe "#initialize" do
     it 'has a balance of 50 by default' do
@@ -30,7 +23,7 @@ describe Oystercard do
 
     it 'raises an error if the maximum balance is exceeded' do
       value = 100
-      message = "Maximum balance of #{Oystercard::MAXIMUM_BALANCE} exceeded by £#{(value + oystercard.balance)-Oystercard::MAXIMUM_BALANCE}"
+      message = "Maximum balance exceeded"
       expect { oystercard.top_up(value) }.to raise_error message
     end
 
@@ -40,9 +33,22 @@ describe Oystercard do
 
     it 'raises an error if the balance is too low' do
       oystercard.balance = 0
-      expect { oystercard.touch_in(:station) }.to raise_error 'Balance is too low'
+      expect { oystercard.touch_in(:station1) }.to raise_error 'Balance is too low'
     end
 
+    it 'charges penalty fare if you forgot to touch out' do
+      expect{
+        2.times{oystercard.touch_in(station1)}
+      }.to change{oystercard.balance}.by(-Journey::DEFAULT_PENALTY)
+    end
+
+  end
+
+  describe "#touch_out" do
+
+    it 'charges penalty fare if you forgot to touch in' do
+      expect{oystercard.touch_out(station2)}.to change{oystercard.balance}.by(-Journey::DEFAULT_PENALTY)
+    end
   end
 
 

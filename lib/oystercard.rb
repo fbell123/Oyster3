@@ -3,7 +3,7 @@ require_relative 'journey'
 
 class Oystercard
 
-  attr_reader :current_journey, :entry_station, :exit_station
+  attr_reader :journey
   attr_accessor :balance
 
   MAXIMUM_BALANCE = 90
@@ -12,26 +12,24 @@ class Oystercard
 
   def initialize
     @balance = 50
-    @journey = Journey.new
   end
 
-
   def top_up(value)
-    total_value = value + @balance
-    raise "Maximum balance of #{Oystercard::MAXIMUM_BALANCE} exceeded by £#{(total_value) - MAXIMUM_BALANCE}" if total_value > MAXIMUM_BALANCE
+    raise "Maximum balance exceeded" if @balance + value > MAXIMUM_BALANCE
     @balance += value
   end
 
   def touch_in(entry_station)
     raise 'Balance is too low' if @balance < MINIMUM_BALANCE
-    @journey.start_journey(entry_station)
-    [entry_station.name, entry_station.zone]
+    touch_out(nil) if !@journey.nil? && @journey.exit_station.nil?
+    create_journey(entry_station)
+    [@journey.entry_station]
   end
 
   def touch_out(exit_station)
-    @journey.end_journey(exit_station)
-    deduct(@journey.fare)
-    [exit_station.name, exit_station.zone, @journey.fare]
+    create_journey(nil) if @journey.nil?
+    deduct(@journey.end_journey(exit_station))
+    [@journey.exit_station, @journey.fare]
   end
 
 
@@ -39,6 +37,11 @@ class Oystercard
 
   def deduct(fare)
     @balance -= fare
+  end
+
+  def create_journey(entry_station)
+    @journey = Journey.new
+    @journey.start_journey(entry_station)
   end
 
 end

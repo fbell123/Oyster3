@@ -4,47 +4,49 @@ require 'station'
 
 describe Journey do
 
-  subject(:journey_history) {described_class.new}
-
-  before :each do
-    @station1 = Station.new('Paddington',1)
-    @station2 = Station.new('Waterloo',2)
-  end
+  subject(:journey) {described_class.new}
+  let(:station1){double("station", name: "Paddington", zone: 1)}
+  let(:station2){double("station", name: "Waterloo", zone: 2)}
 
   describe "#fare" do
     it "deducts the minimum fare for a single trip" do
-      journey_history.start_journey(@station1)
-      journey_history.end_journey(@station2)
-      expect(journey_history.fare).to eq Journey::MINIMUM_FARE
+      journey.start_journey(station1)
+      journey.end_journey(station2)
+      expect(journey.fare).to eq Journey::MINIMUM_FARE
     end
 
     it 'deducts the penalty fare for incomplete journey' do
-      journey_history.start_journey(@station1)
-      expect(journey_history.fare).to eq Journey::DEFAULT_PENALTY
+      journey.start_journey(station1)
+      expect(journey.fare).to eq Journey::DEFAULT_PENALTY
+    end
+
+    it 'deducts penatly if haven\'t touched in' do
+      journey.end_journey(station1)
+      expect(journey.fare).to eq Journey::DEFAULT_PENALTY
     end
 
   end
 
-  it "last journey hash has the appropriate key symbols" do
-    expect(journey_history.clear_current_journey).to include(:entry_station, :entry_zone,
-                                                      :exit_station, :exit_zone)
+  it 'checks if start journey saves entry station' do
+    journey.start_journey(station1)
+    expect(journey.entry_station).to be station1
   end
 
-  it 'checks if one journey is created on touch out' do
-    journey_history.start_journey(@station1)
-    journey_history.end_journey(@station2)
-    expect(journey_history.current_journey).to eq({entry_station: "Paddington", entry_zone: 1,
-                                    exit_station: "Waterloo", exit_zone: 2})
+  it 'checks if end journey saves exit station' do
+    journey.end_journey(station2)
+    expect(journey.exit_station).to be station2
   end
 
-  it 'checks the default journey history' do
-    expect(journey_history.clear_current_journey).to eq({entry_station: nil, entry_zone: nil,
-                                                        exit_station: nil, exit_zone: nil})
+  it 'checks a journey is saved' do
+    journey.start_journey(station1)
+    journey.end_journey(station2)
+    expect(journey.history.last).not_to be_nil
   end
 
-  it 'records entry station name and zone' do
-    journey_history.start_journey(@station1)
-    expect(journey_history.current_journey).to eq({entry_station: "Paddington", entry_zone: 1, exit_station: nil, exit_zone: nil})
+  it 'checks journey history is empty when Oyster is created' do
+    expect(journey.history).to eq []
   end
+
+
 
 end
