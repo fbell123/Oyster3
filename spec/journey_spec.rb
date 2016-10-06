@@ -13,11 +13,8 @@ describe Journey do
 
   describe "#fare" do
     it "deducts the minimum fare for a single zone trip" do
-      p journey.fare
       journey.start_journey(station1)
-      p journey.fare
       journey.end_journey(station3)
-      p journey.fare
       expect(journey.fare).to eq Journey::MINIMUM_FARE
     end
 

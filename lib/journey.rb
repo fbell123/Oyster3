@@ -14,8 +14,7 @@ class Journey
   end
 
   def clear_current_journey
-    @entry_station = nil
-    @exit_station = nil
+    @entry_station, @exit_station = nil, nil
   end
 
   def start_journey(entry_station)

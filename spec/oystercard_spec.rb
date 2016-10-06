@@ -28,9 +28,7 @@ describe Oystercard do
     end
 
     it 'raises an error if the maximum balance is exceeded' do
-      value = 100
-      message = "Maximum balance exceeded"
-      expect { oystercard.top_up(value) }.to raise_error message
+      expect { oystercard.top_up(50) }.to raise_error 'Maximum balance exceeded'
     end
 
   end

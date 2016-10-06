@@ -6,7 +6,7 @@ class JourneyLog
   attr_reader :history
 
   def initialize
-    @history = Array.new
+    @history = []
   end
 
   def save_journey(journey)
