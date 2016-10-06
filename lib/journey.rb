@@ -30,18 +30,18 @@ class Journey
     fare
   end
 
-
-
-  def add_to_history
-    @journey_log.save_journey(self)
-  end
-
   def complete?
     !@entry_station.nil? && !@exit_station.nil?
   end
 
   def fare
     complete? ? boundary_fare : DEFAULT_PENALTY
+  end
+
+  private
+
+  def add_to_history
+    @journey_log.save_journey(self)
   end
 
   def boundary_fare
