@@ -32,7 +32,8 @@ class Oystercard
 
   def touch_out(exit_station)
     #If this is the first ever touch
-    create_journey(nil) if @journey.nil?
+    #touch_in(nil) if @journey.nil? && journey.entry_station.nil?
+    create_journey(nil) if @journey.nil? || @journey_log.history.include?(@journey)
     deduct(@journey.end_journey(exit_station))
     exit_message
   end

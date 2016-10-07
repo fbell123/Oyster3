@@ -44,7 +44,7 @@ class Journey
   end
 
   def boundary_fare
-    ((entry_station.zone - exit_station.zone).abs * BOUNDARY_FARE) + MINIMUM_FARE
+    (entry_station.zone - exit_station.zone).abs * BOUNDARY_FARE + MINIMUM_FARE
   end
 
 end

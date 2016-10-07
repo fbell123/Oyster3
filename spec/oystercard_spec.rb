@@ -50,9 +50,20 @@ describe Oystercard do
 
   describe "#touch_out" do
 
-    it 'charges penalty fare if you forgot to touch in' do
-      expect{oystercard.touch_out(station2)}.to change{oystercard.balance}.by(-Journey::DEFAULT_PENALTY)
+    it 'charges penalty fare if you forgot to touch out twice' do
+      expect{
+        2.times{oystercard.touch_out(station3)}
+      }.to change{oystercard.balance}.by(2*(-Journey::DEFAULT_PENALTY))
     end
+
+    it 'charges penalty fare if you forgot to touch in, touch out, touch out' do
+      expect{
+        oystercard.touch_in(station1)
+        oystercard.touch_out(station3)
+        oystercard.touch_out(station3)
+      }.to change{oystercard.balance}.by(-(Journey::DEFAULT_PENALTY + Journey::MINIMUM_FARE))
+    end
+
   end
 
   it 'deducts boundary fare for one zone crossed' do
