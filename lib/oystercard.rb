@@ -1,9 +1,10 @@
 require_relative 'station'
 require_relative 'journey'
+require_relative 'journey_log'
 
 class Oystercard
 
-  attr_reader :entry_station, :last_journey, :current_journey, :exit_station
+  attr_reader :journey, :journey_log
   attr_accessor :balance
 
   MAXIMUM_BALANCE = 90
@@ -12,49 +13,53 @@ class Oystercard
 
   def initialize
     @balance = 50
-    @last_journey = {}
-    @entry_station = []
-    @journey_history = []
-    @current_journey = Journey.new(self)
+    @journey_log = JourneyLog.new
   end
 
   def top_up(value)
-    total_value = value + @balance
-    raise "Maximum balance of #{Oystercard::MAXIMUM_BALANCE} exceeded by £#{(total_value) - MAXIMUM_BALANCE}" if total_value > MAXIMUM_BALANCE
+    raise "Maximum balance exceeded" if @balance + value > MAXIMUM_BALANCE
     @balance += value
   end
 
   def touch_in(entry_station)
-    raise 'Balance is too low' if @balance < MINIMUM_BALANCE  
-    @entry_station << entry_station
+    raise 'Balance is too low' if @balance < MINIMUM_BALANCE
+    #If the user forgot to touch out, touch out with a station of nil
+    #aka you have a journey and an exit station but no entry station
+    touch_out(nil) if !@journey.nil? && @journey.exit_station.nil?
+    create_journey(entry_station)
+    entry_message
   end
 
   def touch_out(exit_station)
-    @exit_station = exit_station
-    deduct(@current_journey.fare)
-    one_journey
+    #If this is the first ever touch
+    create_journey(nil) if @journey.nil?
+    deduct(@journey.end_journey(exit_station))
+    exit_message
   end
 
-  def one_journey
-    @last_journey = {entry_station: @entry_station, exit_station: @exit_station}
-    journey_history
-    @entry_station = nil
-    @exit_station = nil
-  end
-
-  def journey_history
-    @journey_history << @last_journey
-  end
-
-
-  def in_journey?
-    @entry_station ? true : false
-  end
 
   private
 
   def deduct(fare)
     @balance -= fare
+  end
+
+  def create_journey(entry_station)
+    @journey = Journey.new(@journey_log)
+    @journey.start_journey(entry_station)
+  end
+
+  def entry_message
+    puts "Station: #{@journey.entry_station.name}"
+  end
+
+  def exit_message
+    puts "Station: #{@journey.exit_station.name}. Charge: #{@journey.fare}" unless @journey.exit_station.nil?
+    penalty_message
+  end
+
+  def penalty_message
+    puts "Charged penalty fare #{Journey::DEFAULT_PENALTY}" unless @journey.complete?
   end
 
 end

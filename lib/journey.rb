@@ -3,21 +3,48 @@ require_relative 'oystercard'
 class Journey
 
   DEFAULT_PENALTY = 6
-  MINIMUM_FARE = 3
-  def initialize(oyster)
-    @oystercard = oyster
+  MINIMUM_FARE = 1
+  BOUNDARY_FARE = 1
+
+
+  attr_reader :entry_station, :exit_station, :journey_log
+
+  def initialize(journey_log)
+    @journey_log = journey_log
   end
 
-  def start(oystercard)
-    oystercard.entry_station ? true : false
+  def clear_current_journey
+    @entry_station, @exit_station = nil, nil
   end
 
-  def finish(oystercard)
-    oystercard.exit_station ? true : false
+  def start_journey(entry_station)
+    clear_current_journey
+    @entry_station = entry_station
+  end
+
+  def end_journey(exit_station)
+    @exit_station = exit_station
+    @entry_station = nil unless complete?
+    add_to_history
+    fare
+  end
+
+  def complete?
+    !@entry_station.nil? && !@exit_station.nil?
   end
 
   def fare
-    start(@oystercard) && finish(@oystercard) ? MINIMUM_FARE : DEFAULT_PENALTY
+    complete? ? boundary_fare : DEFAULT_PENALTY
+  end
+
+  private
+
+  def add_to_history
+    @journey_log.save_journey(self)
+  end
+
+  def boundary_fare
+    ((entry_station.zone - exit_station.zone).abs * BOUNDARY_FARE) + MINIMUM_FARE
   end
 
 end
